@@ -1,0 +1,26 @@
+wanna play or not - ask out - while loop
+#game while:
+    #if yes:
+        play game
+    else:
+        end the code
+    ✔ #play game: @done(25-06-30 12:45)
+        assign 2 cards for player
+        assign cards of computer as per BlackJack Dealer's Rule
+        check for ace for computer
+        check for 2 ace for player at start
+        display scores for player and computer
+        draw cards for player at his will
+    ✔ #final display : @done(25-06-30 12:45)
+        Black Jack checker
+        Player Busted
+        Computer Busted
+        Double Busted
+        Win
+        lose
+        draw
+
+#draw card - a list of elements - [] don't delete just use:
+    - assign ace as 11 
+    - randint
+    - game setup variables
