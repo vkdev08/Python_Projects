@@ -1,0 +1,11 @@
+Process:
+    ✔ Welcome @done(25-07-01 23:58)
+    ✔ Get a random int from 0 to 100 @done(25-07-01 23:58)
+    ✔ easy or hard : @done(25-07-01 23:58)
+        easy:
+            10 attempts
+        hard :
+            5 attempts
+        ✔ per attempt: @done(25-07-01 23:58)
+            take num and compare with ans
+            print output
