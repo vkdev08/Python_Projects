@@ -1,0 +1,9 @@
+Game Loop:
+    A : one from data:
+        vs
+    B : one from data (A != B):
+        ✔ take input @done(25-07-03 00:16)
+        ✔ Validate : @done(25-07-03 00:16)
+             ✔ update Score or end @done(25-07-03 00:16)
+             ✔ next A = B @done(25-07-03 00:16)
+
