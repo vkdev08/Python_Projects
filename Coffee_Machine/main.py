@@ -1,3 +1,4 @@
+#game variables
 MENU = {
     "espresso": {
         "ingredients": {
@@ -29,234 +30,99 @@ resources = {
     "milk": 200,
     "coffee": 100,
 }
+balance = 0
 
+#Methods
 def ingredient_check(coffee_type, resources,MENU):
-    checker = True
+    """method to check if coffee is available in MENU, and if yes, then checks if the resources are enough to make the required coffee"""
+    ingredient_checker = True #to check the ingredients enough to make the required coffee
     if coffee_type not in MENU:
-        print("Please enter a valid input")
-        checker = False    
+        return False, False
     else:
         coffee_ingredients = MENU[coffee_type]["ingredients"]
-        checker = all(key in resources and resources[key] >= MENU[coffee_type]['ingredients'][key] for key in MENU[coffee_type]['ingredients'])
-    return checker 
+        ingredient_checker = all(key in resources and resources[key] >= MENU[coffee_type]['ingredients'][key] for key in MENU[coffee_type]['ingredients'])
+    return ingredient_checker,True 
 
-def amt_check(coffee_type,amt,MENU):
+def amt_received_check(coffee_type,amt_received,MENU):
+    """method to verify the amt_received is sufficient to make the required coffee"""
     amt_needed = MENU[coffee_type]['cost']
-    amt_returned = amt - amt_needed
+    amt_returned = amt_received - amt_needed
     if amt_returned >= 0:
+        if amt_returned > 0:
+            print(f"Amount returned: $ {amt_returned:.3f}")
         return True
     else:
+        print(f"Amount returned: $ {amt_received:.3f}")
         return False
 
-
 def make_coffee(coffee_type,MENU,resources):
+    """makes the coffee using the available resources"""
     for k in MENU[coffee_type]['ingredients']:
         if k in resources:
             resources[k] -= MENU[coffee_type]['ingredients'][k]
     return resources
     
+def process_coins():
+    """takes the coins from the user, and calculates the amout"""
+    #values of coin processing
+    QUARTER_VALUE = 0.25
+    DIME_VALUE = 0.10
+    NICKEL_VALUE = 0.05 
+    PENNY_VALUE = 0.01
     
+    #taking input from user
+    quarters = int(input("Enter the number of quarters: "))
+    dimes = int(input("Enter the number of dimes: "))
+    nickles = int(input("Enter the number of nickles: "))
+    pennies = int(input("Enter the number of pennies: ")) 
+    
+    amt_received = quarters*QUARTER_VALUE + dimes*DIME_VALUE + nickles*NICKEL_VALUE + pennies*PENNY_VALUE
+    return amt_received
+
 def coffee_machine(balance,resources, MENU):
-    coffee_type = input("Please enter coffee-type: ").strip().lower()
+    """The main logic in processing the coffee"""
+    running = True
+    
+    #user-input
+    coffee_type = input("What would you like to have?: ").strip().lower()
+
     if coffee_type == 'report':
-        for key,value in resources.items():
-            print(key,value)
-        print("Balance:", balance)
+        #print report
+        for key in resources:
+            print(f"{key.capitalize()}: {resources[key]}")
+        print(f"Balance: ${balance:.2f}")
+    
+    if coffee_type == "off":
+        print("Shutting down the Machine... ")
+        running = False
+        
     else:
-        if ingredient_check(coffee_type, resources, MENU):
-            quaters = int(input("Enter the number of quaters: "))
-            dimes = int(input("Enter the number of dimes: "))
-            nickles = int(input("Enter the number of nickles: "))
-            pennies = int(input("Enter the number of pennies: "))
-            amt = quaters*0.25 + dimes*0.20 + nickles*0.10 + pennies*0.01
-            if amt_check(coffee_type, amt,MENU):
-                resources = make_coffee(coffee_type,MENU,resources)
-                balance += MENU[coffee_type]['cost']
+        #make coffee
+        ingredient_checker, coffee_availability = ingredient_check(coffee_type, resources, MENU)
+        if not coffee_availability:
+            print("This coffee is not in our menu")
+        else:    
+            if ingredient_checker:
+                amt_received = process_coins()
+                if amt_received_check(coffee_type, amt_received,MENU):
+                    resources = make_coffee(coffee_type,MENU,resources)
+                    print("Please enjoy your", coffee_type)
+                    balance += MENU[coffee_type]['cost']
+                else:
+                    print("Insufficent amout,Please enter the sufficient amount from the menu")
             else:
-                print("Insufficent amout")
-        else:
-            print("We are out of ingredients")
+                print("Insufficient ingredients to process your coffee")
     
-    return balance, resources
-balance = 0
-while True:
-    balance, resources = coffee_machine(balance,resources,MENU)
-    
-# MENU = {
-#     "espresso": {
-#         "ingredients": {
-#             "water": 50,
-#             "coffee": 18,
-#         },
-#         "cost": 1.5,
-#     },
-#     "latte": {
-#         "ingredients": {
-#             "water": 200,
-#             "milk": 150,
-#             "coffee": 24,
-#         },
-#         "cost": 2.5,
-#     },
-#     "cappuccino": {
-#         "ingredients": {
-#             "water": 250,
-#             "milk": 100,
-#             "coffee": 24,
-#         },
-#         "cost": 3.0,
-#     }
-# }
+    return balance, resources, running
 
-# resources = {
-#     "water": 300,
-#     "milk": 200,
-#     "coffee": 100,
-# }
-
-# def ingredient_check(coffee_type, resources, MENU):
-#     if coffee_type not in MENU:
-#         print("Please enter a valid input")
-#         return False
-    
-#     coffee_ingredients = MENU[coffee_type]["ingredients"]
-    
-#     # Check if all ingredients are available in sufficient amounts
-#     for ingredient, amount_needed in coffee_ingredients.items():
-#         if ingredient not in resources or resources[ingredient] < amount_needed:
-#             print(f"We are out of {ingredient}")
-#             return False
-            
-#     return True 
-
-# def amt_check(coffee_type, amt, MENU):
-#     amt_needed = MENU[coffee_type]['cost']
-#     amt_returned = amt - amt_needed
-#     return amt_returned >= 0
-
-# def make_coffee(coffee_type, MENU, resources):
-#     for k in MENU[coffee_type]['ingredients']:
-#         resources[k] -= MENU[coffee_type]['ingredients'][k]
-#     return resources
-    
-# def coffee_machine(balance, resources, MENU):
-#     coffee_type = input("Please enter coffee-type: ").strip().lower()
-#     if coffee_type == 'report':
-#         for key, value in resources.items():
-#             print(key, value)
-#         print("Balance:", balance)
-#     else:
-#         if ingredient_check(coffee_type, resources, MENU):
-#             quaters = int(input("Enter the number of quaters: "))
-#             dimes = int(input("Enter the number of dimes: "))
-#             nickles = int(input("Enter the number of nickles: "))
-#             pennies = int(input("Enter the number of pennies: "))
-#             amt = quaters * 0.25 + dimes * 0.10 + nickles * 0.05 + pennies * 0.01
-#             if amt_check(coffee_type, amt, MENU):
-#                 resources = make_coffee(coffee_type, MENU, resources)
-#                 balance += MENU[coffee_type]['cost']
-#             else:
-#                 print("Insufficient amount")
-#         else:
-#             print("We are out of ingredients")
-    
-#     return balance, resources
-
-# while True:
-#     balance = 0
-#     balance, resources = coffee_machine(balance, MENU, resources)
-
-
-
-# MENU = {
-#     "espresso": {
-#         "ingredients": {
-#             "water": 50,
-#             "coffee": 18,
-#         },
-#         "cost": 1.5,
-#     },
-#     "latte": {
-#         "ingredients": {
-#             "water": 200,
-#             "milk": 150,
-#             "coffee": 24,
-#         },
-#         "cost": 2.5,
-#     },
-#     "cappuccino": {
-#         "ingredients": {
-#             "water": 250,
-#             "milk": 100,
-#             "coffee": 24,
-#         },
-#         "cost": 3.0,
-#     }
-# }
-
-# resources = {
-#     "water": 300,
-#     "milk": 200,
-#     "coffee": 100,
-# }
-
-# def ingredient_check(coffee_type, resources, MENU):
-#     if coffee_type not in MENU:
-#         print("Please enter a valid input")
-#         return False
-    
-#     for ingredient, needed in MENU[coffee_type]["ingredients"].items():
-#         if resources.get(ingredient, 0) < needed:
-#             print(f"Sorry, there is not enough {ingredient}")
-#             return False
-#     return True
-
-# def amt_check(coffee_type, amt, MENU):
-#     return amt >= MENU[coffee_type]['cost']
-
-# def make_coffee(coffee_type, MENU, resources):
-#     for ingredient, amount in MENU[coffee_type]["ingredients"].items():
-#         resources[ingredient] -= amount
-#     print(f"Here is your {coffee_type} ☕. Enjoy!")
-#     return resources
-    
-# def coffee_machine(balance, resources, MENU):
-#     coffee_type = input("What would you like? (espresso/latte/cappuccino): ").lower()
-    
-#     if coffee_type == "report":
-#         print(f"Water: {resources['water']}ml")
-#         print(f"Milk: {resources['milk']}ml")
-#         print(f"Coffee: {resources['coffee']}g")
-#         print(f"Money: ${balance}")
-#         return balance, resources
-#     elif coffee_type == "off":
-#         exit()
-#     elif coffee_type in MENU:
-#         if ingredient_check(coffee_type, resources, MENU):
-#             print("Please insert coins.")
-#             quarters = int(input("How many quarters?: ")) * 0.25
-#             dimes = int(input("How many dimes?: ")) * 0.10
-#             nickles = int(input("How many nickles?: ")) * 0.05
-#             pennies = int(input("How many pennies?: ")) * 0.01
-#             total = quarters + dimes + nickles + pennies
-            
-#             if total >= MENU[coffee_type]['cost']:
-#                 change = round(total - MENU[coffee_type]['cost'], 2)
-#                 if change > 0:
-#                     print(f"Here is ${change} in change.")
-#                 balance += MENU[coffee_type]['cost']
-#                 resources = make_coffee(coffee_type, MENU, resources)
-#             else:
-#                 print("Sorry that's not enough money. Money refunded.")
-#         else:
-#             return balance, resources
-#     else:
-#         print("Please enter a valid selection")
-#         return balance, resources
-    
-#     return balance, resources
-
-# balance = 0
-# while True:
-#     balance, resources = coffee_machine(balance, resources, MENU)
- 
+#Machine Loop
+running = True
+while running:
+    #MENU printing
+    print("MENU: ")
+    for key in MENU:
+        print(f"{key.capitalize(): <10}: ${MENU[key]['cost']:>6.3f}")
+        
+    #coffee macking
+    balance, resources,running = coffee_machine(balance,resources,MENU)
+    print("\n")
